@@ -9,18 +9,19 @@ void dEdx()
 
   TH1F* hloss = new TH1F("hloss","; -dE [MeV]",100,0,10);
   TGraph* gdEdx =  new TGraph();
-  double momentum = 1;
-  for(int i = 0 ; i < nev ; ++i) {
-    app->SetPrimaryMomentum(momentum);
-    //hprim->Reset();
-    app->RunMC(1,!i);
-    //get energy deposited in our box
-    double loss = app->depEinNode("/EXPH_1/CALB_1");
-    loss *= 1000; //MeV
-    hloss->Fill(loss);
-    loss = loss / density /length; //MeV g-1 cm2
-    std::cout << "betagamma:" << momentum/mass << "     -dE/dex:" << loss << '\n';
-  }
+  double momentum = 0.01;
+  for (int k = 1; k<5; ++k) {
+    for(int i = 0 ; i < nev ; ++i) {
+      app->SetPrimaryMomentum(momentum);
+      //hprim->Reset();
+      app->RunMC(1,!i);
+      //get energy deposited in our box
+      double loss = app->depEinNode("/EXPH_1/CALB_1");
+      loss *= 1000; //MeV
+      hloss->Fill(loss);
+      loss = loss / density /length; //MeV g-1 cm2
+      std::cout << "betagamma:" << momentum/mass << "     -dE/dex:" << loss << '\n';
+    }
   gdEdx->SetPoint(gdEdx->GetN(),momentum/mass,hloss->GetMean() / density /length);
   std::cout << hloss->GetMean()  / density /length << '\n';
   TCanvas* c1 = new TCanvas("c1");
